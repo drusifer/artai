@@ -1,62 +1,40 @@
-# Sprint 1 Task Board: One art tool for every project
+# Sprint 2 Task Board: Move recard and GlobalHeadsOrTails onto artai
 
-*   **Goal**: Deliver the `artai` CLI that consolidates recard's and GlobalHeadsOrTails' art pipelines (manifest → resumable generation → pack → review/verify → regenerate). Prove both projects' current inputs run through it unchanged and document how to switch.
-*   **Tier**: Tier 1 (Major)
-*   **Total Points**: 24
-*   **Branch**: `main` (per `docs/SDLC.md` §6 — one commit per approved phase, never push)
-*   **Stories**: `docs/sprints/USER_STORIES_SPRINT1.md` · **Architecture**: `docs/ARCH.md` · **Decisions**: `docs/DECISIONS.md`
-*   **Status**: Complete — launched 2026-10-20 (version bump awaiting owner approval)
+*   **Goal**: recard and GlobalHeadsOrTails make their art through artai (pip-installed into each repo), reusing existing masters, and every old tool, test, doc and reference is gone.
+*   **Tier**: Tier 2 (Minor/Fast-track)
+*   **Total Points**: 13
+*   **Branch**: recard `dev`, GlobalHeadsOrTails `main`, artai `main` — one commit per approved phase per repo, never push.
+*   **Plan**: `docs/sprints/SPRINT2_MIGRATION.md` (stories + architecture). Sprint 1: git history and `agents/chat_archive/CHAT_SPRINT_1.md`.
+*   **Status**: Approved (Morpheus Step 3a) — in progress
 
 ---
 
 ## Stage 0: SDLC Gate (Blocker)
 
-- [x] **Task 0.1:** Verify `docs/SDLC.md` exists and is current. (*Owner: Mouse | Verification: `test -f docs/SDLC.md`*) — written by Tank, commit 86b1ea5.
+- [x] **Task 0.1:** `docs/SDLC.md` exists (artai). GHOT has `docs/SDLC.md`; recard has none (changes documented in its README). (*Owner: Mouse*)
 
-Phase 0 (build environment) is not needed: Morpheus's arch §7 flags no new language, package manager or tool.
-
----
+### Phase 0: Pre-existing GlobalHeadsOrTails work (*Tank*)
+- [x] **Task 0.2:** GHOT test baseline recorded; pre-existing work committed unchanged (`666b617`), except `ntag424_sdm_provisioner/dist` + `/build`, now gitignored (owner decision). (*Owner: Tank*)
 
 ## Sprint Execution Phases
 
-Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's ACs) → Morpheus review → commit on `main`.
+### Phase 1: recard on artai (STORY-MIG-1, MIG-3 for recard)
+- [x] **Task 1.1:** Makefile `art-install`/`art-gen`/`art`/`art-review`/`art-verify`; remove `cards:art`; move 132 masters to `build/rtg-art/masters`. (*Owner: Neo | `make art-gen` → 132 already present*)
+- [x] **Task 1.2:** Delete `tools/imagegen`, `tests/imagegen.test.js`; scrub all references; README/RTG_DESIGN artai section. (*Owner: Neo | MIG-3 AC2 grep empty*)
+- [x] **Task 1.3:** UAT (art targets, pack dimensions unchanged, `make check-fast`), Morpheus review, commit on `dev`. (*Owner: Trin → Morpheus*)
 
-### Phase 1: Manifests, prompts and status (STORY-ART-1, fixtures for ART-7)
-*Phase goal: `artai prompts` and `artai status` work on every manifest kind, with parity fixtures in place.*
-- [x] **Task 1.1:** Capture parity fixtures: copy GHOT's 4 manifests + data files and a recard RTG job-list sample into `tests/fixtures/`; record GHOT `--export-prompts` output for each as expected JSON. (*Owner: Neo | Verification: `ls tests/fixtures/ghot tests/fixtures/recard`*)
-- [x] **Task 1.2:** TDD `manifest.py` (YAML inline/data_file, TSV, JSON; validation; defaults; `--work/--out/--style/--fit` overrides) and `prompts.py` (GHOT semantics, missing-placeholder warnings); `cli.py` with `prompts` and `status`. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'manifest or prompts or status'"`*)
-- [x] **Task 1.3:** UAT ART-1 AC1–7 + ART-7 AC2 parity; Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
+### Phase 2: GlobalHeadsOrTails on artai (STORY-MIG-2, MIG-3 for GHOT)
+- [x] **Task 2.1:** Makefile `install-art`/`art-*`; drop old art tests from `test-all`; seed masters; Tank updates GHOT SDLC §2. (*Owner: Neo + Tank | `make art-status` → masters 36*)
+- [x] **Task 2.2:** Delete old tool, tests and dedicated docs; scrub references everywhere else. (*Owner: Neo | MIG-3 AC2 grep empty*)
+- [x] **Task 2.3:** UAT (targets; suites vs baseline), Morpheus review, commit on `main`. (*Owner: Trin → Morpheus*)
 
-### Phase 2: Resumable generation engine (STORY-ART-2 AC1–8)
-*Phase goal: `artai generate --backend mock` is resumable, quota-terminal, parallel and safe across processes.*
-- [x] **Task 2.1:** TDD `imaging.py` (is_valid by dimensions, placeholder tag, atomic save), `claims.py` (exclusive claims, liveness, stale takeover), `backends/base.py` + registry + `mock`, `backends/_proc.py` (argv run, timeout, log, quota regex). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'imaging or claims or backend'"`*)
-- [x] **Task 2.2:** TDD `runner.py` + `generate` CLI: skip/resume, retries, timeout, quota stop + marker + exit 2, `--parallel` bounds, `--ids`/`--reverse`, per-item logs, required `--backend`, two concurrent processes. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'runner or generate'"`*)
-- [x] **Task 2.3:** UAT ART-2 AC1–8 (incl. a real two-process run on a fixture); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
-
-### Phase 3: Real providers (STORY-ART-2 AC9, STORY-ART-3)
-*Phase goal: `command`, `codex`, `agy` and `gemini` backends work against stand-in executables and a stub HTTP server.*
-- [x] **Task 3.1:** TDD `command` backend (shlex, per-argv substitution, `{output}`/`{output_path}`/`{resolution}`, `cli_command` alias, injection test) and `codex` + `agy` backends (safe flags, scratch claim, yolo rule, reference clause) using fake CLIs in a temp dir. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'command or codex or agy'"`*)
-- [x] **Task 3.2:** TDD `gemini` backend against a local stub HTTP server (missing key preflight, PNG signature, no-image error, 429 → quota, reference image sent, key never logged). (*Owner: Neo | Verification: `bobp make test ARGS="-k gemini"`*)
-- [x] **Task 3.3:** UAT ART-2 AC9 + ART-3 AC1–6; Morpheus review (security focus: no shell, no key leakage, no bypass flags); commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
-
-### Phase 4: Pack, review and verify (STORY-ART-4, STORY-ART-5)
-*Phase goal: masters become packed assets, a browsable contact sheet, and a verify gate that means "done".*
-- [x] **Task 4.1:** TDD `pack.py` (contain/autocrop fit, defaults per kind, format/quality, atomic writes, skip+list unopenable) + `pack` CLI. (*Owner: Neo | Verification: `bobp make test ARGS="-k pack"`*)
-- [x] **Task 4.2:** TDD `review.py` contact sheet (escaped, relative paths, search, missing marked) and `verify` (size, sha256 duplicates, placeholder rule + `--allow-mock`, sample-only notice) + CLIs. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'review or verify'"`*)
-- [x] **Task 4.3:** UAT ART-4 AC1–5 + ART-5 AC1–5 (open the HTML once); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
-
-### Phase 5: Regenerate, parity end-to-end and docs (STORY-ART-6, STORY-ART-7)
-*Phase goal: rejected art can be redone safely, every fixture runs the full pipeline, and switching is documented.*
-- [x] **Task 5.1:** TDD `regenerate` (archive to `rejected/<ts>/`, all-or-nothing live-claim refusal, requires `--ids`) and `unlock` (refuse live). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'regenerate or unlock'"`*)
-- [x] **Task 5.2:** Parity end-to-end test over all fixtures (status → prompts → generate mock → pack → review → verify `--allow-mock`); write `docs/USAGE.md` and `docs/MIGRATION.md`. (*Owner: Neo | Verification: `bobp make test ARGS="-k parity"`*)
-- [x] **Task 5.3:** UAT ART-6 AC1–4 + ART-7 AC1–4 + sprint UAT plan `docs/sprints/UAT_PLAN_SPRINT1.md`; Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
-
----
+### Phase 3: artai cleanup (STORY-MIG-3 AC4) + ADR-0006
+- [x] **Task 3.1:** Delete artai `docs/MIGRATION.md` and the survey; update README/USAGE/BACKLOG/CHANGELOG/doc index; record ADR-0006. (*Owner: Oracle*)
+- [x] **Task 3.2:** Review + commit. (*Owner: Morpheus*)
 
 ## Stage 3: Sprint Closeout
-
-- [x] **Task C.1:** SDLC conformance check. (*Owner: Tank | Verification: `bobp make distclean && bobp make install && bobp make test && bobp make lint`*)
-- [x] **Task C.2:** Document grooming, lesson archiving, and chat report. (*Owner: Oracle | Verification: `bobp chat-report --moniker SPRINT_1`*)
-- [x] **Task C.3:** End-to-end user usability testing & lesson review. (*Owner: Smith | Verification: `bobp chat "*user approve"`*)
-- [x] **Task C.4:** Sprint retrospective & backlog grooming. (*Owner: All personas | Verification: Retros posted in CHAT.md*)
-- [x] **Task C.5:** Sprint launch & release announcement (version 0.1.0 → 0.2.0 with user approval). (*Owner: Cypher | Verification: `bobp chat "*pm launch"`*)
+- [ ] **Task C.1:** SDLC check (artai full; consumer art targets run). (*Owner: Tank*)
+- [ ] **Task C.2:** Groom + chat report SPRINT_2. (*Owner: Oracle*)
+- [ ] **Task C.3:** End-to-end user test across both repos. (*Owner: Smith*)
+- [ ] **Task C.4:** Retro. (*Owner: All*)
+- [ ] **Task C.5:** Launch. (*Owner: Cypher*)

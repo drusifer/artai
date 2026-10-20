@@ -21,6 +21,14 @@ artai is pip-installable (not published to PyPI). Into any Python ≥ 3.11 virtu
 pip install /path/to/artai        # puts the `artai` command on that venv's PATH
 ```
 
+## Used by
+
+- **recard** — `make art-install`, `art-gen`, `art`, `art-review`, `art-verify` (card art).
+- **GlobalHeadsOrTails** — `make install-art`, `art-status`, `art-generate`, `art-pack`, `art-review`, `art-verify` (stickers).
+
+Both expect this repo checked out beside them (`../artai`, override with `ARTAI_SRC=`) and
+pip-install it editable into their own environment.
+
 ## Use
 
 ```sh
@@ -36,13 +44,12 @@ artai pack my_set.yaml && artai review my_set.yaml && artai verify my_set.yaml
 | Document | What it covers |
 |---|---|
 | [docs/USAGE.md](docs/USAGE.md) | Every command, option, environment variable and manifest field |
-| [docs/MIGRATION.md](docs/MIGRATION.md) | Switching recard and GlobalHeadsOrTails over to artai |
 | [docs/ARCH.md](docs/ARCH.md) | Architecture: components, flows, failure modes |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | Decision records ADR-0001 … ADR-0005 |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Decision records ADR-0001 … ADR-0006 |
 | [docs/SDLC.md](docs/SDLC.md) | Toolchain, make targets, quality gates, change management |
 | [docs/LESSONS.md](docs/LESSONS.md) | Engineering lessons |
 | [docs/BACKLOG.md](docs/BACKLOG.md) | What's next |
 | [CHANGELOG.md](CHANGELOG.md) | Release notes |
-| [docs/sprints/](docs/sprints/) | Sprint 1 stories and acceptance test plan |
+| [docs/sprints/](docs/sprints/) | Sprint 1 stories and UAT plan; Sprint 2 migration plan |
 | [task.md](task.md) | Current sprint task board |
 | [agents/](agents/) | Bob Protocol team: personas, state, chat ([index](agents/DOCUMENTATION_INDEX.md), [chat archive](agents/chat_archive/)) |

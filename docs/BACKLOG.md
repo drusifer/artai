@@ -2,8 +2,8 @@
 
 Ordered by Cypher after Sprint 1 retro (2026-10-20).
 
-1. **Migration sprint** — switch recard and GlobalHeadsOrTails to artai (checklist in `docs/MIGRATION.md`). *Owner decision pending.*
-2. **Live provider samples** — one image each from codex, agy and gemini before migrating (Story OQ1).
+1. ~~**Migration sprint**~~ — done in Sprint 2 (2026-10-20): recard `a1c6fc5`, GlobalHeadsOrTails `35fb018`.
+2. **Live provider samples** — one image each from codex, agy and gemini (Story OQ1); recard's sandboxed codex mode is still unproven live.
 3. **Warn about missing reference images before a run** — today the item fails mid-run after quota was spent on others (Smith).
 4. **Faster test loop** — mark the parity suite slow / add a quick target; it is ~35 s of 47 s on the Pi (Trin).
 5. **Fixture refresh** — re-capture `tests/fixtures/` when consumer manifests change (Oracle).

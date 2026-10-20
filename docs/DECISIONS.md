@@ -34,3 +34,10 @@ MADR-style records. Decided by Morpheus (or the owner where noted), recorded by 
 * **Status**: Accepted — 2026-10-20
 * **Decision**: codex runs with `--sandbox workspace-write`, never `--dangerously-bypass-approvals-and-sandbox` (GHOT's later "codex-safe" decision); `--backend` is required (no default), so a missing flag neither spends quota nor writes placeholder art; mock masters are tagged and never count as finished art for real runs or `verify` (Smith Gate 2); manifest commands run without a shell; agy permission bypass only for single-item opt-in.
 * **Consequences**: + no accidental spend, no shell injection via prompts. − recard's `art-gen` must add `--backend codex` when it migrates.
+
+## ADR-0006: Consumers pip-install artai (editable) from a sibling checkout
+* **Status**: Accepted — 2026-10-20 (owner chose pip install; Sprint 2)
+* **Context**: recard (Node, with an existing `.venv` for test-audit) and GlobalHeadsOrTails (Python workspace whose Makefile switches every target to a root `.venv` when one exists) must run artai. artai is not published or pushed yet.
+* **Options**: (a) call `../artai/.venv/bin/artai` by path; (b) `pip install -e ../artai` into each repo via a make target; (c) `pip install git+<url>@<tag>`.
+* **Decision**: (b). recard installs into its `.venv` (`make art-install`); GlobalHeadsOrTails into a dedicated `.venv-art` (`make install-art`) so its workspace `.venv` logic is untouched. Location overridable with `ARTAI_SRC`. (a) rejected by the owner; (c) possible once artai is pushed and tagged.
+* **Consequences**: + each repo owns its environment; editable install picks up artai changes immediately. − both need the sibling checkout; a breaking artai change reaches them without a version gate (pin via (c) when artai has releases).

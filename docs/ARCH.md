@@ -10,7 +10,7 @@
 ## 1. Executive Summary & System Overview
 
 artai is a single Python CLI that turns a manifest of art items into reviewed, web-ready images.
-It merges three predecessors (survey: `agents/oracle/art_tooling_survey.md`): it takes
+It merges three predecessors: it takes
 GlobalHeadsOrTails' manifest/template/autocrop/review model, recard's run semantics
 (resumable, quota-terminal, bounded parallelism, dimension-based validation, keep masters and
 pack separately), and the deleted `sticker_art.mjs`/`nanobanana_backend.mjs` hardening
@@ -273,7 +273,7 @@ this host is treated as stale and **taken over automatically by `generate`** (th
 * GHOT's hardcoded `families/forms` data-file expansion is dropped (no current data file uses
   it — all four are flat lists). Re-add as a generic expansion only if a consumer needs it.
 * `autocrop: false` in GHOT meant "stretch to resolution"; artai maps it to `contain` (never
-  distorts). Listed in `docs/MIGRATION.md` as a behaviour difference.
+  distorts). None of the consumers' manifests use `autocrop: false`.
 * Liveness check relies on `/proc` (Linux); elsewhere falls back to `os.kill(pid, 0)`, which
   cannot detect PID reuse. Acceptable: both consumers run on Linux.
 * Live provider calls are not exercised in CI (quota cost) — stand-ins only (Story OQ1).

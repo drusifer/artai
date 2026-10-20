@@ -1,5 +1,7 @@
 # Sprint 1 User Stories: One art tool for every project
 
+> Note (Sprint 2): `docs/MIGRATION.md` and `agents/oracle/art_tooling_survey.md`, referenced below, were deleted once the migration landed; see git history.
+
 *   **Total Points**: 24 (Tier 1)
 *   **Branch**: `main` (per `docs/SDLC.md` §6 — no sprint branches; one commit per approved phase)
 *   **Source**: User, 2026-10-20, `$sprint consolidate the art work generation tooling from ../recard and ../GlobalHeadsAndTails into a new tool in this repo` (agents/CHAT.md). Decisions on 2026-10-20: Python; build the tool only (no consumer migration); commit per phase on main.

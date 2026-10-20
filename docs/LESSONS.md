@@ -32,7 +32,7 @@ points at deleted or out-of-tree tooling that belongs in scope.
 
 ### References
 - **Commit:** GHOT `b6e4e7e`; artai `39a01eb`
-- **Files:** `agents/oracle/art_tooling_survey.md`, `docs/sprints/USER_STORIES_SPRINT1.md`
+- **Files:** `docs/sprints/USER_STORIES_SPRINT1.md` (the survey itself was removed in Sprint 2)
 
 ---
 

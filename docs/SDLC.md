@@ -127,8 +127,10 @@ is reported to Tank so one of them gets fixed.
     runtime dependencies (Pillow, PyYAML) and puts `artai` on that venv's PATH.
   - `pip install git+<repo-url>@<tag-or-commit>` — once the repo is pushed; consumers should pin
     a tag or commit, not a branch.
-  - Calling `../artai/.venv/bin/artai` by path also works (see `docs/MIGRATION.md`).
-  Consumers (`recard`, `GlobalHeadsOrTails`) choose one route in the migration sprint.
+  - Calling `../artai/.venv/bin/artai` by path also works.
+  Consumers (Sprint 2, ADR-0006): recard `make art-install` → its `.venv`; GlobalHeadsOrTails
+  `make install-art` → `.venv-art`; both `pip install -e ../artai` (override `ARTAI_SRC=`).
+  An artai change therefore reaches both immediately — run their `art-verify` after CLI changes.
   Verified: fresh venv, `pip install` at f9a85ac → `artai 0.1.0`, deps pillow 13.0.0, PyYAML 6.0.3.
 
 ## 8. CI / deploy

@@ -1,5 +1,7 @@
 # Sprint 1 Acceptance Test Plan (UAT): One art tool for every project
 
+> Note (Sprint 2): `docs/MIGRATION.md` and `agents/oracle/art_tooling_survey.md`, referenced below, were deleted once the migration landed; see git history.
+
 *   **Sprint**: `SPRINT_1`
 *   **Author**: Trin (*qa)
 *   **Date**: 2026-10-20
