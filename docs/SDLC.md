@@ -159,8 +159,10 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 3. `.venv/pyvenv.cfg` says `include-system-site-packages = false`.
 4. Every target in section 3 exists in `make help` and does what the table says; any new target
    is listed here or removed.
-5. No doc or script tells people to run bare `python3`/`pip`/`pytest` against the project
-   (`grep -rnE '(^|\s)(pip|pytest) ' README.md docs` shows only this file's tables).
+5. No doc or script tells people to *develop or test* artai with bare `python3`/`pip`/`pytest`
+   instead of `make`: `grep -rnE '(^|\s)(pip|pytest) ' README.md docs | grep -v 'pip install /path/to/artai\|pip install git+'`
+   shows only this file's lines. (`pip install /path/to/artai` and `pip install git+…` are the
+   section 7 consumer install routes and are allowed.)
 6. `.venv/`, `build/`, `*.egg-info/` are gitignored (`git check-ignore` succeeds for each);
    `requires-python` unchanged or deliberately bumped.
 7. This sprint's commits: one per approved phase, on `main`, conventional message, nothing
@@ -171,5 +173,6 @@ Run by Tank at sprint close (`*devops sdlc-check`):
     `pyproject.toml` version (proves the section 7 install route still works).
 
 ---
-*Last verified: 2026-10-20 against f9a85ac by Tank — section 7 pip install from a clean venv.
+*Last verified: 2026-10-20 against f9a85ac by Tank — section 7 pip install from a clean venv;
+conformance item 5 rescoped after Oracle review (consumer pip install allowed).
 Previous full check: 214be61 (Sprint 1 close) — distclean → install → test → lint; items 1–9 pass.*
