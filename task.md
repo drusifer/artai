@@ -29,9 +29,9 @@ Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's
 
 ### Phase 2: Resumable generation engine (STORY-ART-2 AC1–8)
 *Phase goal: `artai generate --backend mock` is resumable, quota-terminal, parallel and safe across processes.*
-- [ ] **Task 2.1:** TDD `imaging.py` (is_valid by dimensions, placeholder tag, atomic save), `claims.py` (exclusive claims, liveness, stale takeover), `backends/base.py` + registry + `mock`, `backends/_proc.py` (argv run, timeout, log, quota regex). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'imaging or claims or backend'"`*)
-- [ ] **Task 2.2:** TDD `runner.py` + `generate` CLI: skip/resume, retries, timeout, quota stop + marker + exit 2, `--parallel` bounds, `--ids`/`--reverse`, per-item logs, required `--backend`, two concurrent processes. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'runner or generate'"`*)
-- [ ] **Task 2.3:** UAT ART-2 AC1–8 (incl. a real two-process run on a fixture); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
+- [x] **Task 2.1:** TDD `imaging.py` (is_valid by dimensions, placeholder tag, atomic save), `claims.py` (exclusive claims, liveness, stale takeover), `backends/base.py` + registry + `mock`, `backends/_proc.py` (argv run, timeout, log, quota regex). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'imaging or claims or backend'"`*)
+- [x] **Task 2.2:** TDD `runner.py` + `generate` CLI: skip/resume, retries, timeout, quota stop + marker + exit 2, `--parallel` bounds, `--ids`/`--reverse`, per-item logs, required `--backend`, two concurrent processes. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'runner or generate'"`*)
+- [x] **Task 2.3:** UAT ART-2 AC1–8 (incl. a real two-process run on a fixture); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
 
 ### Phase 3: Real providers (STORY-ART-2 AC9, STORY-ART-3)
 *Phase goal: `command`, `codex`, `agy` and `gemini` backends work against stand-in executables and a stub HTTP server.*
