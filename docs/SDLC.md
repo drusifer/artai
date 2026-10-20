@@ -175,6 +175,6 @@ Run by Tank at sprint close (`*devops sdlc-check`):
     `pyproject.toml` version (proves the section 7 install route still works).
 
 ---
-*Last verified: 2026-10-20 against f9a85ac by Tank — section 7 pip install from a clean venv;
-conformance item 5 rescoped after Oracle review (consumer pip install allowed).
-Previous full check: 214be61 (Sprint 1 close) — distclean → install → test → lint; items 1–9 pass.*
+*Last verified: 2026-10-20 against 52085c0 (Sprint 2 close) by Tank — lint, secrets, no code change since
+50406ec (136+2 tests then); consumers: GlobalHeadsOrTails `.venv-art` rebuilt from clean → art-verify 36/36;
+recard art-verify 132/132.*

@@ -5,7 +5,7 @@
 *   **Total Points**: 13
 *   **Branch**: recard `dev`, GlobalHeadsOrTails `main`, artai `main` — one commit per approved phase per repo, never push.
 *   **Plan**: `docs/sprints/SPRINT2_MIGRATION.md` (stories + architecture). Sprint 1: git history and `agents/chat_archive/CHAT_SPRINT_1.md`.
-*   **Status**: Approved (Morpheus Step 3a) — in progress
+*   **Status**: Complete — launched 2026-10-20
 
 ---
 
@@ -33,8 +33,8 @@
 - [x] **Task 3.2:** Review + commit. (*Owner: Morpheus*)
 
 ## Stage 3: Sprint Closeout
-- [ ] **Task C.1:** SDLC check (artai full; consumer art targets run). (*Owner: Tank*)
-- [ ] **Task C.2:** Groom + chat report SPRINT_2. (*Owner: Oracle*)
-- [ ] **Task C.3:** End-to-end user test across both repos. (*Owner: Smith*)
-- [ ] **Task C.4:** Retro. (*Owner: All*)
-- [ ] **Task C.5:** Launch. (*Owner: Cypher*)
+- [x] **Task C.1:** SDLC check (artai full; consumer art targets run). (*Owner: Tank*)
+- [x] **Task C.2:** Groom + chat report SPRINT_2. (*Owner: Oracle*)
+- [x] **Task C.3:** End-to-end user test across both repos. (*Owner: Smith*)
+- [x] **Task C.4:** Retro. (*Owner: All*)
+- [x] **Task C.5:** Launch. (*Owner: Cypher*)

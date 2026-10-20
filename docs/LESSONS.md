@@ -4,6 +4,50 @@ Engineering lessons, newest first. Recorded by Oracle; reviewed by Smith at spri
 
 ---
 
+## [2026-10-20] When adding a venv to a repo whose Makefile auto-detects `.venv`, use a separate directory
+
+> **Tags:** #Build #Makefile #Morpheus
+
+### Context
+Sprint 2 had to pip-install artai into GlobalHeadsOrTails. Its SDLC names a root `.venv` as the standard, so the plan said "install into the root `.venv`".
+
+### The Issue
+The Makefile picks `PYTHON` with `ifneq ($(wildcard .venv/bin/python),)` — the first time a root `.venv` exists, **every** Python target uses it. No root `.venv` existed; tests ran from `ntag424_sdm_provisioner/.venv`. Creating `.venv` with only artai in it would have silently moved `test-all` to an interpreter without pytest. Morpheus caught it reading the Makefile header before Phase 2.
+
+### The Solution
+A dedicated `.venv-art/` (gitignored) for artai, called by path (`.venv-art/bin/artai`); the workspace interpreter selection is untouched. recard kept its shared `.venv`, because there only `test-audit` uses it, by explicit path.
+
+### The Rule (The "Lesson")
+Before creating any virtualenv in a repo, grep its Makefile for `wildcard .venv` / `PYTHON ?=`. If interpreter selection depends on the directory existing, install the new tool into its own directory and call it by path.
+
+### References
+- **Commit:** GlobalHeadsOrTails `35fb018`; ADR-0006
+- **Files:** GlobalHeadsOrTails `Makefile` (lines 1–7, `install-art`)
+
+---
+
+## [2026-10-20] When asked to "commit all changes" in someone else's working tree, dry-run and scan first
+
+> **Tags:** #Git #Security #Tank
+
+### Context
+The owner asked for GlobalHeadsOrTails' pre-existing uncommitted work to be committed with the migration.
+
+### The Issue
+`git add -A --dry-run` showed an untracked `ntag424_sdm_provisioner/dist/sdm-provisioner-latest.tar` (434 MB container image; GitHub rejects files > 100 MB) that also matched a private-key pattern. A blind `git add -A` would have put it into history.
+
+### The Solution
+Paused and asked; the owner chose to skip `dist/` and `build/` and gitignore them. Then committed the rest (149 files) after a size and secret scan of the staged set.
+
+### The Rule (The "Lesson")
+Before committing a working tree you did not create, run `git add -A --dry-run`, check sizes (`du` on untracked files) and grep the staged set for key patterns. Anything over 50 MB or matching a secret pattern goes back to the owner before it is staged.
+
+### References
+- **Commit:** GlobalHeadsOrTails `666b617`
+- **Files:** GlobalHeadsOrTails `.gitignore`
+
+---
+
 ## [2026-10-20] When consolidating tools, recover deleted predecessors from git history first
 
 > **Tags:** #Process #Consolidation #Oracle
