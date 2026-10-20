@@ -10,6 +10,7 @@
 - artai is pip-installable from source (`pip install /path/to/artai`), verified in a clean venv; recorded in `docs/SDLC.md` §7.
 
 ### Important Notes
+- 2026-10-20 Sprint 2 DONE: recard (dev a1c6fc5) and GlobalHeadsOrTails (main 666b617 pre-existing work, 35fb018 migration) use artai via `make art-install` / `make install-art` (pip -e ../artai). Old tools/docs/refs removed (grep-verified). artai e7acfbf. Nothing pushed in any repo; GHOT is also 1 commit behind origin/main.
 - Sprint 1 complete and launched 2026-10-20. Commits `86b1ea5`…`384d3d7` on `main` (13 commits), **none pushed**.
 - 138 tests pass (`bobp make test`, ~47 s on this Pi; parity suite is most of it); `bobp make lint` clean.
 - Real `codex` (/usr/bin/codex) and `agy` (~/.local/bin/agy) are installed; providers were only tested with stand-ins (no quota spent).
@@ -39,11 +40,11 @@ Oracle state: `agents/oracle/state.md` (docs consistent as of 2026-10-20).
 
 ## Next Steps
 ### Immediate Next Action
-On resume (`/init`): read this file, then `task.md` (Sprint 1, all ticked) and `docs/BACKLOG.md`. Ask the owner which of these to do — do not start any unasked:
-1. **Release 0.2.0?** If yes (Cypher + Tank): set `version = "0.2.0"` in `pyproject.toml` AND `__version__` in `src/artai/__init__.py`; move CHANGELOG "Unreleased" to `## 0.2.0 — <date>`; `bobp make test && bobp make lint`; commit `chore(release): 0.2.0`; `git tag v0.2.0`. Do not push.
-2. **Live provider samples?** If yes (Trin): one image each, e.g. `.venv/bin/artai generate tests/fixtures/recard/rtg_jobs.tsv --backend codex --ids rtg-b-001 --work <scratch>`; same with `--backend agy`; gemini only if `GEMINI_API_KEY` is set. Record results in `docs/sprints/UAT_PLAN_SPRINT1.md` §5.
-3. **Migration sprint?** If yes: run `$sprint` for backlog #1 using the checklist at the end of `docs/MIGRATION.md` (edits recard + GlobalHeadsOrTails Makefiles; needs owner OK to change those repos).
-4. **Commit the agent scaffolding?** Owner's call (listed above).
+On resume: ask the owner (do not start unasked):
+1. Push? artai main, recard dev, GlobalHeadsOrTails main (GHOT needs `git pull --rebase` first: 1 upstream commit). Agents are blocked from `git push` by the permission classifier; the owner runs `! git push ...`.
+2. Release artai 0.2.0 + tag (CHANGELOG has Sprint 1 + 2 under Unreleased).
+3. Live provider sample (recard: `make art-gen` uses sandboxed codex — never run live yet).
+4. Backlog #9/#10 in docs/BACKLOG.md (protect packed-without-master; pack skips placeholders).
 
 ### Waiting On
 Owner answers to 1–4.

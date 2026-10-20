@@ -15,45 +15,6 @@ Agents **must** use this for every message posted to CHAT.md:
 
 ---
 
----
-[<small>2026-10-20 14:48:37</small>] [**make**]->[**all**] *build*:
- Build PASSED | make test | /home/drusifer/Projects/artai/build/build.out
-........................................................................ [ 52%]
-..................................................................       [100%]
-138 passed in 47.22s
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_2.md` (2026-10-20 15:43:31) — Sprint 2 moved recard and GlobalHeadsOrTails onto artai, pip-installed editable from ../artai (recard .venv, GHOT .venv-art to avoid hijacking its workspace PYTHON). Existing masters were reused (132 recard, 36+90+37 GHOT), so no quota was spent; recard re-pack was byte-identical. GHOT's pre-existing work was committed first (434 MB tar excluded and ignored). Every old tool, test, doc and reference was removed from both repos (grep-verified), and artai's migration guide/survey with them; ADR-0006 records the install route. Nothing pushed.
 
 ---
-[<small>2026-10-20 14:59:06</small>] [**User**]->[**all**] *request*:
- /oracle groom docs
-
----
-[<small>2026-10-20 15:00:11</small>] [**Oracle**]->[**Tank**] *ora handoff*:
- Groom done: ARCH + ADR-0004 synced to code, stories closed, README TOC, pip install documented (verified in fresh venv), 5 dead index links removed. 0 broken links. @Tank *devops sdlc §7: artai is pip-installable from a checkout (pip install /path/to/artai) - record as an install route
-
----
-[<small>2026-10-20 15:00:38</small>] [**User**]->[**all**] *request*:
- go tank
-
----
-[<small>2026-10-20 15:01:06</small>] [**Tank**]->[**Oracle**] *devops sdlc*:
- SDLC §7 updated: artai pip-installable from source (pip install /path/to/artai or git+url@tag), runtime deps only; verified in clean venv at f9a85ac. Added conformance item 10 (pip install into throwaway venv). build target still absent - nothing published. @Oracle note for index
-
----
-[<small>2026-10-20 15:01:43</small>] [**User**]->[**all**] *request*:
- /oracle good now?
-
----
-[<small>2026-10-20 15:02:04</small>] [**Oracle**]->[**Tank**] *ora review*:
- rubric SDLC: TRUE=S WHOLE=A CLEAN=S CLASS=A CHECK=W GAPS=S. CHECK: item 5 forbids bare pip in docs, but §7 now documents 'pip install /path/to/artai' for consumers, so the check fails on correct docs. FIX: scope item 5 to developing artai; allow the §7 consumer install lines. @Tank *devops sdlc
-
----
-[<small>2026-10-20 15:02:04</small>] [**Tank**]->[**Oracle**] *devops sdlc*:
- SDLC item 5 rescoped (dev-only; §7 consumer pip lines allowed); check passes. @Oracle re-review
-
----
-[<small>2026-10-20 15:02:04</small>] [**Oracle**]->[**all**] *ora review*:
- Re-review: rubric SDLC: TRUE=S WHOLE=A CLEAN=S CLASS=A CHECK=A GAPS=S. Docs consistent: 0 broken links, no stray rubrics, pip route in README/USAGE/MIGRATION/SDLC agree, versions match (0.1.0; bump pending owner).
-
----
-[<small>2026-10-20 15:02:50</small>] [**Bob**]->[**all**] *checkpoint*:
- Checkpoint saved in agents/bob/state.md. Sprint 1 done (384d3d7, not pushed). Next: ask owner re 0.2.0 release, live provider samples, migration sprint, committing agent scaffolding. Ready for context clear. Resume with *resume or /init.

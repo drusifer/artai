@@ -12,12 +12,10 @@ Type `*help` for complete command reference with examples.
 
 - **[README.md](../README.md)** — what artai is, setup, quick use
 - **[docs/USAGE.md](../docs/USAGE.md)** — every command, option, env var and manifest field
-- **[docs/MIGRATION.md](../docs/MIGRATION.md)** — switching recard / GlobalHeadsOrTails to artai
 - **[docs/ARCH.md](../docs/ARCH.md)** — architecture · **[docs/DECISIONS.md](../docs/DECISIONS.md)** — ADR-0001…0005
 - **[docs/SDLC.md](../docs/SDLC.md)** — build, test, change management (Tank)
 - **[docs/LESSONS.md](../docs/LESSONS.md)** — engineering lessons
-- **[docs/sprints/](../docs/sprints/)** — Sprint 1 stories and UAT plan · **[task.md](../task.md)** — task board
-- **[oracle/art_tooling_survey.md](oracle/art_tooling_survey.md)** — source-repo survey behind Sprint 1
+- **[docs/sprints/](../docs/sprints/)** — Sprint 1 stories and UAT plan; Sprint 2 migration plan · **[task.md](../task.md)** — task board
 
 ---
 
