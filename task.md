@@ -41,9 +41,9 @@ Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's
 
 ### Phase 4: Pack, review and verify (STORY-ART-4, STORY-ART-5)
 *Phase goal: masters become packed assets, a browsable contact sheet, and a verify gate that means "done".*
-- [ ] **Task 4.1:** TDD `pack.py` (contain/autocrop fit, defaults per kind, format/quality, atomic writes, skip+list unopenable) + `pack` CLI. (*Owner: Neo | Verification: `bobp make test ARGS="-k pack"`*)
-- [ ] **Task 4.2:** TDD `review.py` contact sheet (escaped, relative paths, search, missing marked) and `verify` (size, sha256 duplicates, placeholder rule + `--allow-mock`, sample-only notice) + CLIs. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'review or verify'"`*)
-- [ ] **Task 4.3:** UAT ART-4 AC1–5 + ART-5 AC1–5 (open the HTML once); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
+- [x] **Task 4.1:** TDD `pack.py` (contain/autocrop fit, defaults per kind, format/quality, atomic writes, skip+list unopenable) + `pack` CLI. (*Owner: Neo | Verification: `bobp make test ARGS="-k pack"`*)
+- [x] **Task 4.2:** TDD `review.py` contact sheet (escaped, relative paths, search, missing marked) and `verify` (size, sha256 duplicates, placeholder rule + `--allow-mock`, sample-only notice) + CLIs. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'review or verify'"`*)
+- [x] **Task 4.3:** UAT ART-4 AC1–5 + ART-5 AC1–5 (open the HTML once); Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
 
 ### Phase 5: Regenerate, parity end-to-end and docs (STORY-ART-6, STORY-ART-7)
 *Phase goal: rejected art can be redone safely, every fixture runs the full pipeline, and switching is documented.*

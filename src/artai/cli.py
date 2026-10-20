@@ -17,7 +17,9 @@ from artai.errors import ArtaiError, ConfigError
 from artai.imaging import is_placeholder, is_valid
 from artai.manifest import load_manifest
 from artai.model import FITS, ArtSet, Item
+from artai.pack import FORMATS, pack
 from artai.prompts import render
+from artai.review import build_contact_sheet, verify
 from artai.runner import RunOptions, RunSummary, run
 
 MISSING_SHOWN = 8
@@ -164,6 +166,53 @@ def cmd_generate(args: argparse.Namespace) -> int:
     return generate_items(args, art_set, select(items, args.ids))
 
 
+def cmd_pack(args: argparse.Namespace) -> int:
+    from dataclasses import replace
+
+    art_set, items = _load(args)
+    changes: dict = {}
+    if args.format:
+        changes["format"] = args.format
+    for flag, key, low, high in (("--quality", "quality", 1, 100), ("--size", "size", 1, 20000)):
+        raw = getattr(args, key)
+        if raw is not None:
+            try:
+                value = int(raw)
+            except ValueError:
+                value = 0
+            if not low <= value <= high:
+                raise ConfigError(f"{flag} must be a whole number {low}–{high}, got '{raw}'")
+            changes[key] = value
+    art_set = replace(art_set, **changes) if changes else art_set
+    summary = pack(art_set, items)
+    print(f"artai — packed {summary.packed}/{summary.total} → {art_set.output_dir}")
+    if summary.skipped:
+        print(f"skipped (master does not open): {', '.join(summary.skipped)}")
+        return 1
+    return 0
+
+
+def cmd_review(args: argparse.Namespace) -> int:
+    art_set, items = _load(args)
+    print(f"contact sheet: {build_contact_sheet(art_set, items)}")
+    return 0
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    art_set, all_items = _load(args)
+    items = select(all_items, args.ids)
+    report = verify(art_set, items, allow_mock=args.allow_mock)
+    for item_id, problem in report.problems:
+        print(f"✖ {item_id}: {problem}")
+    for first, second in report.duplicates:
+        print(f"✖ {first} and {second}: identical images")
+    bad = len({i for i, _ in report.problems} | {i for pair in report.duplicates for i in pair})
+    print(f"\nartai — {report.checked - bad}/{report.checked} verified for set {art_set.name}")
+    if args.ids:
+        print("note: this result covers the selected sample only and cannot show the set is complete")
+    return 0 if report.ok else 1
+
+
 # ── parser ─────────────────────────────────────────────────────────────────
 
 Command = Callable[[argparse.Namespace], int]
@@ -206,6 +255,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("generate", parents=[common, _generation()], help="paint missing masters (resumable)")
     p.set_defaults(handler=cmd_generate)
+
+    p = sub.add_parser("pack", parents=[common], help="turn masters into packed web images")
+    p.add_argument("--format", choices=FORMATS, help="output format (overrides manifest)")
+    p.add_argument("--quality", metavar="Q", help="1–100 (overrides manifest)")
+    p.add_argument("--size", metavar="PX", help="longest edge for --fit contain (overrides manifest)")
+    p.set_defaults(handler=cmd_pack)
+
+    p = sub.add_parser("review", parents=[common], help="write an HTML contact sheet")
+    p.set_defaults(handler=cmd_review)
+
+    p = sub.add_parser("verify", parents=[common], help="check every image exists, fits and is unique")
+    p.add_argument("--ids", metavar="A,B", help="check only these ids (a sample, not proof of completeness)")
+    p.add_argument("--allow-mock", action="store_true", help="accept mock placeholder art (for tests)")
+    p.set_defaults(handler=cmd_verify)
     return parser
 
 
