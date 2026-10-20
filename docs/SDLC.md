@@ -49,8 +49,9 @@ The Makefile is the only entry point; recipes call `.venv/bin/python` and stop w
 | `distclean` | `clean` + removes `.venv/` | used for the from-clean check |
 | `help` | lists targets (default goal) | |
 
-Standard targets deliberately absent: `build` — artai is used from its checkout (editable
-install / `make run`), not published as a wheel. Add it when a release channel is chosen (section 7).
+Standard targets deliberately absent: `build` — nothing is published; consumers install from a
+checkout with pip (section 7), which builds the wheel itself. Add `build` when a release channel
+(PyPI, wheel artifact) is chosen.
 
 ## 4. Dependencies
 
@@ -120,8 +121,15 @@ is reported to Tank so one of them gets fixed.
 - **Bumped:** by Cypher at sprint launch, with user approval; semver (minor for features).
 - **CLI entry points:** `[project.scripts] artai = "artai.cli:main"` — installed to
   `.venv/bin/artai` by `make install`.
-- **Artifact:** None — not published. Consumers (`recard`, `GlobalHeadsOrTails`) will call
-  this checkout's CLI; how they install it is decided when they migrate (not yet planned).
+- **Artifact:** None published (no PyPI, no wheel kept). The package is pip-installable from
+  source via the `setuptools` backend in `pyproject.toml`:
+  - `pip install /path/to/artai` — from a checkout, into any Python ≥ 3.11 venv; installs only
+    runtime dependencies (Pillow, PyYAML) and puts `artai` on that venv's PATH.
+  - `pip install git+<repo-url>@<tag-or-commit>` — once the repo is pushed; consumers should pin
+    a tag or commit, not a branch.
+  - Calling `../artai/.venv/bin/artai` by path also works (see `docs/MIGRATION.md`).
+  Consumers (`recard`, `GlobalHeadsOrTails`) choose one route in the migration sprint.
+  Verified: fresh venv, `pip install` at f9a85ac → `artai 0.1.0`, deps pillow 13.0.0, PyYAML 6.0.3.
 
 ## 8. CI / deploy
 
@@ -159,7 +167,9 @@ Run by Tank at sprint close (`*devops sdlc-check`):
    pushed by an agent (`git status -sb` shows no upstream change made by agents).
 8. `pyproject.toml` version equals `artai.__version__`.
 9. `git grep -nE 'AIza[0-9A-Za-z_-]{20,}|sk-[A-Za-z0-9]{20,}'` finds no credential.
+10. `pip install .` into a throwaway venv succeeds and `artai --version` matches the
+    `pyproject.toml` version (proves the section 7 install route still works).
 
 ---
-*Last verified: 2026-10-20 against 214be61 (Sprint 1 close), by Tank — distclean → install →
-test (136 passed) → lint; conformance items 1–9 pass.*
+*Last verified: 2026-10-20 against f9a85ac by Tank — section 7 pip install from a clean venv.
+Previous full check: 214be61 (Sprint 1 close) — distclean → install → test → lint; items 1–9 pass.*
