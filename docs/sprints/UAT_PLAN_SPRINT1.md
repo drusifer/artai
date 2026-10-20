@@ -152,6 +152,8 @@ shortened to `./`. Automated coverage for each AC is named in brackets.
 | 3 | Quota message printed before the summary line when piped | flush stdout |
 | 4 | Contact sheet scrolled sideways on phones; long lore swamped cards | responsive grid, wrapped path, long fields in details |
 | 5 | Manifest `min_size` ignored by `generate` | manifest value is the default; `--min-size` overrides |
+| close (Smith) | Usage errors (mistyped command/option) exited 2 = the quota code | argparse errors mapped to 1 (`50406ec`) |
+| close (Smith) | `verify` gave no next step when only the pack was missing | "(master exists — run artai pack)" |
 
 ## 5. Sign-off
 
