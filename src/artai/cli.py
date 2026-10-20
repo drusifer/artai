@@ -342,7 +342,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     except SystemExit as exit_:
-        return int(exit_.code or 0)
+        # argparse exits 2 on a usage error, but 2 means "quota exhausted" here: report 1.
+        return 0 if not exit_.code else 1
     if not getattr(args, "handler", None):
         parser.print_usage(sys.stderr)
         return 1

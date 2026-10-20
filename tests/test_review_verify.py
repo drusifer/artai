@@ -111,3 +111,9 @@ def test_long_metadata_goes_into_details(in_tmp):
     html = build_contact_sheet(art_set, items).read_text()
     assert "<span><b>tier</b>: gold</span>" in html
     assert "<dt>lore</dt><dd>" + "x" * 80 in html
+
+
+def test_verify_hints_pack_when_master_exists(setup):
+    art_set, items = setup
+    save_png(Image.new("RGB", (800, 800), "teal"), items[2].master(art_set))
+    assert verify(art_set, items).problems == [("c", "no packed image (master exists — run artai pack)")]

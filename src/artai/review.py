@@ -44,7 +44,8 @@ def verify(art_set: ArtSet, items: list[Item], allow_mock: bool = False) -> Veri
     for item in items:
         packed = item.packed(art_set)
         if not packed.is_file():
-            report.problems.append((item.id, "no packed image"))
+            hint = " (master exists — run artai pack)" if item.master(art_set).is_file() else ""
+            report.problems.append((item.id, "no packed image" + hint))
             continue
         try:
             with Image.open(packed) as image:

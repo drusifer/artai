@@ -57,3 +57,10 @@ def test_tsv_with_out_override(in_tmp, capsys):
 
 def test_no_command_prints_usage(capsys):
     assert main([]) == 1
+
+
+def test_usage_errors_exit_1_not_quota_code(in_tmp, capsys):
+    path = str(write(in_tmp / "m.yaml", YAML))
+    assert main(["genrate", path]) == 1
+    assert main(["pack", path, "--format", "gif"]) == 1
+    assert main(["--help"]) == 0

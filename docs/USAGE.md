@@ -12,7 +12,7 @@ Run it from this checkout after `make install`: `.venv/bin/artai <command> <mani
 (or `make run ARGS="<command> <manifest> ..."`). From another project, call it by path, e.g.
 `../artai/.venv/bin/artai`.
 
-Exit codes: **0** success · **1** error, refused, or some items failed · **2** provider quota
+Exit codes: **0** success · **1** error (including a mistyped command or option), refused, or some items failed · **2** provider quota
 exhausted (re-run later; finished images are skipped) · **130** interrupted with Ctrl-C.
 
 ## A complete example
