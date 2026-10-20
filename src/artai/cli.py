@@ -142,12 +142,13 @@ def generate_items(args: argparse.Namespace, art_set: ArtSet, items: list[Item])
 def _report(summary: RunSummary, minutes: float) -> int:
     print(
         f"\nartai — {summary.ok} generated, {summary.skipped} already present, "
-        f"{len(summary.busy)} busy elsewhere, {len(summary.failed)} failed in {minutes:.1f} min"
+        f"{len(summary.busy)} busy elsewhere, {len(summary.failed)} failed in {minutes:.1f} min",
+        flush=True,
     )
     if summary.busy:
         print(f"busy (claimed by another live run): {', '.join(summary.busy)}")
     if summary.failed:
-        print(f"failed: {', '.join(summary.failed)} — see the logs/ folder in the work directory")
+        print(f"failed: {', '.join(summary.failed)} — see the logs/ folder in the work directory", flush=True)
     if summary.quota:
         print(
             f"\n✖ provider quota exhausted — run stopped early ({summary.not_started} item(s) not started).\n"

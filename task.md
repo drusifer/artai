@@ -35,9 +35,9 @@ Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's
 
 ### Phase 3: Real providers (STORY-ART-2 AC9, STORY-ART-3)
 *Phase goal: `command`, `codex`, `agy` and `gemini` backends work against stand-in executables and a stub HTTP server.*
-- [ ] **Task 3.1:** TDD `command` backend (shlex, per-argv substitution, `{output}`/`{output_path}`/`{resolution}`, `cli_command` alias, injection test) and `codex` + `agy` backends (safe flags, scratch claim, yolo rule, reference clause) using fake CLIs in a temp dir. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'command or codex or agy'"`*)
-- [ ] **Task 3.2:** TDD `gemini` backend against a local stub HTTP server (missing key preflight, PNG signature, no-image error, 429 → quota, reference image sent, key never logged). (*Owner: Neo | Verification: `bobp make test ARGS="-k gemini"`*)
-- [ ] **Task 3.3:** UAT ART-2 AC9 + ART-3 AC1–6; Morpheus review (security focus: no shell, no key leakage, no bypass flags); commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
+- [x] **Task 3.1:** TDD `command` backend (shlex, per-argv substitution, `{output}`/`{output_path}`/`{resolution}`, `cli_command` alias, injection test) and `codex` + `agy` backends (safe flags, scratch claim, yolo rule, reference clause) using fake CLIs in a temp dir. (*Owner: Neo | Verification: `bobp make test ARGS="-k 'command or codex or agy'"`*)
+- [x] **Task 3.2:** TDD `gemini` backend against a local stub HTTP server (missing key preflight, PNG signature, no-image error, 429 → quota, reference image sent, key never logged). (*Owner: Neo | Verification: `bobp make test ARGS="-k gemini"`*)
+- [x] **Task 3.3:** UAT ART-2 AC9 + ART-3 AC1–6; Morpheus review (security focus: no shell, no key leakage, no bypass flags); commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
 
 ### Phase 4: Pack, review and verify (STORY-ART-4, STORY-ART-5)
 *Phase goal: masters become packed assets, a browsable contact sheet, and a verify gate that means "done".*
