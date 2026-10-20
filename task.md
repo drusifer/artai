@@ -5,7 +5,7 @@
 *   **Total Points**: 24
 *   **Branch**: `main` (per `docs/SDLC.md` §6 — one commit per approved phase, never push)
 *   **Stories**: `docs/sprints/USER_STORIES_SPRINT1.md` · **Architecture**: `docs/ARCH.md` · **Decisions**: `docs/DECISIONS.md`
-*   **Status**: Approved (Morpheus Step 3a) — Phase 1 in progress
+*   **Status**: Complete — launched 2026-10-20 (version bump awaiting owner approval)
 
 ---
 
@@ -55,8 +55,8 @@ Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's
 
 ## Stage 3: Sprint Closeout
 
-- [ ] **Task C.1:** SDLC conformance check. (*Owner: Tank | Verification: `bobp make distclean && bobp make install && bobp make test && bobp make lint`*)
-- [ ] **Task C.2:** Document grooming, lesson archiving, and chat report. (*Owner: Oracle | Verification: `bobp chat-report --moniker SPRINT_1`*)
-- [ ] **Task C.3:** End-to-end user usability testing & lesson review. (*Owner: Smith | Verification: `bobp chat "*user approve"`*)
-- [ ] **Task C.4:** Sprint retrospective & backlog grooming. (*Owner: All personas | Verification: Retros posted in CHAT.md*)
-- [ ] **Task C.5:** Sprint launch & release announcement (version 0.1.0 → 0.2.0 with user approval). (*Owner: Cypher | Verification: `bobp chat "*pm launch"`*)
+- [x] **Task C.1:** SDLC conformance check. (*Owner: Tank | Verification: `bobp make distclean && bobp make install && bobp make test && bobp make lint`*)
+- [x] **Task C.2:** Document grooming, lesson archiving, and chat report. (*Owner: Oracle | Verification: `bobp chat-report --moniker SPRINT_1`*)
+- [x] **Task C.3:** End-to-end user usability testing & lesson review. (*Owner: Smith | Verification: `bobp chat "*user approve"`*)
+- [x] **Task C.4:** Sprint retrospective & backlog grooming. (*Owner: All personas | Verification: Retros posted in CHAT.md*)
+- [x] **Task C.5:** Sprint launch & release announcement (version 0.1.0 → 0.2.0 with user approval). (*Owner: Cypher | Verification: `bobp chat "*pm launch"`*)
