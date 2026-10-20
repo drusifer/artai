@@ -77,3 +77,11 @@ def test_status_separates_placeholders(manifest, scripted, capsys):
     assert main(["status", manifest]) == 0
     out = capsys.readouterr().out
     assert "masters:      1 " in out and "placeholders: 2 " in out
+
+
+def test_manifest_min_size_is_the_default(in_tmp, capsys):
+    manifest = str(
+        write(in_tmp / "m.yaml", "artwork_set: {name: s, min_size: 2000}\nitems: [{id: a, prompt: p}]")
+    )
+    assert main(["generate", manifest, "--backend", "mock", "--retries", "0"]) == 1  # mock draws 1024px
+    assert main(["generate", manifest, "--backend", "mock", "--min-size", "512"]) == 0

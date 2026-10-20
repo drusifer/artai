@@ -47,9 +47,9 @@ Each phase ends with: Trin UAT (`bobp make test && bobp make lint` + the phase's
 
 ### Phase 5: Regenerate, parity end-to-end and docs (STORY-ART-6, STORY-ART-7)
 *Phase goal: rejected art can be redone safely, every fixture runs the full pipeline, and switching is documented.*
-- [ ] **Task 5.1:** TDD `regenerate` (archive to `rejected/<ts>/`, all-or-nothing live-claim refusal, requires `--ids`) and `unlock` (refuse live). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'regenerate or unlock'"`*)
-- [ ] **Task 5.2:** Parity end-to-end test over all fixtures (status → prompts → generate mock → pack → review → verify `--allow-mock`); write `docs/USAGE.md` and `docs/MIGRATION.md`. (*Owner: Neo | Verification: `bobp make test ARGS="-k parity"`*)
-- [ ] **Task 5.3:** UAT ART-6 AC1–4 + ART-7 AC1–4 + sprint UAT plan `docs/sprints/UAT_PLAN_SPRINT1.md`; Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
+- [x] **Task 5.1:** TDD `regenerate` (archive to `rejected/<ts>/`, all-or-nothing live-claim refusal, requires `--ids`) and `unlock` (refuse live). (*Owner: Neo | Verification: `bobp make test ARGS="-k 'regenerate or unlock'"`*)
+- [x] **Task 5.2:** Parity end-to-end test over all fixtures (status → prompts → generate mock → pack → review → verify `--allow-mock`); write `docs/USAGE.md` and `docs/MIGRATION.md`. (*Owner: Neo | Verification: `bobp make test ARGS="-k parity"`*)
+- [x] **Task 5.3:** UAT ART-6 AC1–4 + ART-7 AC1–4 + sprint UAT plan `docs/sprints/UAT_PLAN_SPRINT1.md`; Morpheus review; commit. (*Owner: Trin → Morpheus | Verification: `bobp make test && bobp make lint`*)
 
 ---
 

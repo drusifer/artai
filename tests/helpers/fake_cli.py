@@ -34,7 +34,8 @@ if mode == "scratch":
     time.sleep(0.05)
     Image.new("RGB", (640, 640), "blue").save(scratch / f"{{name}}_2.png")
     sys.exit(0)
-Image.new("RGB", (700, 700), "green").save(match.group(1))
+seed = sum(Path(match.group(1)).stem.encode())
+Image.new("RGB", (700, 700), (seed % 256, (seed * 7) % 256, (seed * 13) % 256)).save(match.group(1))
 """
 
 

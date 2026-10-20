@@ -7,12 +7,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 import time
 from collections.abc import Callable
+from datetime import UTC, datetime
 
 from artai import __version__
 from artai.backends import backend_names, get_backend
+from artai.claims import clear_stale, holder
 from artai.errors import ArtaiError, ConfigError
 from artai.imaging import is_placeholder, is_valid
 from artai.manifest import load_manifest
@@ -97,7 +100,7 @@ def select(items: list[Item], ids: str | None) -> list[Item]:
     return [item for item in items if item.id in chosen]
 
 
-def _run_options(args: argparse.Namespace) -> RunOptions:
+def _run_options(args: argparse.Namespace, art_set: ArtSet) -> RunOptions:
     def number(flag: str, raw: str, kind, low, high=None):
         try:
             value = kind(raw)
@@ -112,7 +115,7 @@ def _run_options(args: argparse.Namespace) -> RunOptions:
         parallel=number("--parallel", args.parallel, int, 1, 8),
         retries=number("--retries", args.retries, int, 0),
         timeout=number("--timeout", args.timeout, float, 1),
-        min_size=number("--min-size", args.min_size, int, 1),
+        min_size=art_set.min_size if args.min_size is None else number("--min-size", args.min_size, int, 1),
         reverse=args.reverse,
     )
 
@@ -124,7 +127,7 @@ def generate_items(args: argparse.Namespace, art_set: ArtSet, items: list[Item])
     """Shared by generate and regenerate: validate options, preflight, run, report."""
     if not args.backend:
         raise ConfigError(f"--backend is required (choose one of: {', '.join(backend_names())})")
-    options = _run_options(args)
+    options = _run_options(args, art_set)
     backend = get_backend(args.backend, art_set)
     backend.preflight(items, len(items))
     if art_set.quota_marker.is_file():
@@ -213,6 +216,55 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 0 if report.ok else 1
 
 
+def _require_ids(args: argparse.Namespace, items: list[Item], command: str) -> list[Item]:
+    if not args.ids:
+        raise ConfigError(f"{command} needs --ids (which items to {command}); it never acts on a whole set")
+    return select(items, args.ids)
+
+
+def _refuse_live(art_set: ArtSet, items: list[Item]) -> None:
+    """All-or-nothing: refuse before touching anything if any selected item is being generated."""
+    live = []
+    for item in items:
+        record, alive = holder(art_set.claims_dir, item.id)
+        if alive:
+            live.append(f"{item.id} is held by live process {record.get('pid')} on {record.get('host')}")
+    if live:
+        raise ConfigError("refused, nothing changed: " + "; ".join(live))
+
+
+def cmd_regenerate(args: argparse.Namespace) -> int:
+    art_set, all_items = _load(args)
+    items = _require_ids(args, all_items, "regenerate")
+    _refuse_live(art_set, items)
+    if not args.backend:  # check before moving anything
+        raise ConfigError(f"--backend is required (choose one of: {', '.join(backend_names())})")
+    stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
+    archive = art_set.work_dir / "rejected" / stamp
+    moved = 0
+    for item in items:
+        for source in (item.master(art_set), item.packed(art_set)):
+            if source.is_file():
+                archive.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(source), archive / source.name)
+                moved += 1
+    print(f"set aside {moved} file(s) → {archive}")
+    code = generate_items(args, art_set, items)
+    print(f"next: artai pack {args.manifest}   (the regenerated items have no packed image yet)")
+    return code
+
+
+def cmd_unlock(args: argparse.Namespace) -> int:
+    art_set, all_items = _load(args)
+    items = _require_ids(args, all_items, "unlock")
+    _refuse_live(art_set, items)
+    for item in items:
+        had_claim = holder(art_set.claims_dir, item.id)[0] is not None
+        clear_stale(art_set.claims_dir, item.id)
+        print(f"cleared stale claim: {item.id}" if had_claim else f"no claim: {item.id}")
+    return 0
+
+
 # ── parser ─────────────────────────────────────────────────────────────────
 
 Command = Callable[[argparse.Namespace], int]
@@ -234,7 +286,9 @@ def _generation() -> argparse.ArgumentParser:
     gen.add_argument("--parallel", default="2", metavar="N", help="items generated at once, 1–8 (default 2)")
     gen.add_argument("--retries", default="2", metavar="N", help="extra attempts after a failure (default 2)")
     gen.add_argument("--timeout", default="600", metavar="SEC", help="limit per provider call (default 600)")
-    gen.add_argument("--min-size", default="512", metavar="PX", help="smallest acceptable edge (default 512)")
+    gen.add_argument(
+        "--min-size", metavar="PX", help="smallest acceptable edge (default: manifest min_size, 512)"
+    )
     gen.add_argument("--ids", metavar="A,B", help="only these item ids")
     gen.add_argument("--reverse", action="store_true", help="work from the end of the list")
     return gen
@@ -269,6 +323,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--ids", metavar="A,B", help="check only these ids (a sample, not proof of completeness)")
     p.add_argument("--allow-mock", action="store_true", help="accept mock placeholder art (for tests)")
     p.set_defaults(handler=cmd_verify)
+
+    p = sub.add_parser(
+        "regenerate",
+        parents=[common, _generation()],
+        help="set aside rejected images (--ids) and paint new ones",
+    )
+    p.set_defaults(handler=cmd_regenerate)
+
+    p = sub.add_parser("unlock", parents=[common], help="clear claims left by a crashed run (--ids)")
+    p.add_argument("--ids", metavar="A,B", help="items whose stale claims to clear")
+    p.set_defaults(handler=cmd_unlock)
     return parser
 
 
