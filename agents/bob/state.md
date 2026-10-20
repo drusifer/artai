@@ -6,7 +6,7 @@
 - Architecture decisions ADR-0001…0005 in `docs/DECISIONS.md` (Python port; masters→pack two stages; stdlib-only providers; per-item claim files; safe defaults: `--backend` required, codex sandboxed, no shell).
 
 ### Key Findings
-- Source repos: `../recard` (`tools/imagegen/*.mjs`) and `../GlobalHeadsOrTails` (user wrote "GlobalHeadsAndTails"; folder is **GlobalHeadsOrTails**): `tools/art_generator.py` + deleted tools recoverable via `git show b6e4e7e^:tools/sticker_art.mjs` etc. Survey: `agents/oracle/art_tooling_survey.md`.
+- Source repos: `../recard` (`tools/imagegen/*.mjs`) and `../GlobalHeadsOrTails` (user wrote "GlobalHeadsAndTails"; folder is **GlobalHeadsOrTails**): `tools/art_generator.py` + deleted tools recoverable via `git show b6e4e7e^:tools/sticker_art.mjs` etc. (Survey doc deleted in Sprint 2; see git history.)
 - artai is pip-installable from source (`pip install /path/to/artai`), verified in a clean venv; recorded in `docs/SDLC.md` §7.
 
 ### Important Notes
@@ -15,7 +15,7 @@
 - 138 tests pass (`bobp make test`, ~47 s on this Pi; parity suite is most of it); `bobp make lint` clean.
 - Real `codex` (/usr/bin/codex) and `agy` (~/.local/bin/agy) are installed; providers were only tested with stand-ins (no quota spent).
 - Chat for Sprint 1 archived: `agents/chat_archive/CHAT_SPRINT_1.md`.
-- **Uncommitted (left for owner on purpose):** the Bob Protocol scaffolding — `agents/`, `.agents`, `.claude/`, `.cursorrules`, `.github/`, `AGENT.md`, `AGENTS.md`, `CHATGPT.md`, `GEMINI.md`. All artai code/docs are committed.
+- Agent scaffolding committed (35b5c40); working tree clean.
 
 ## Current Task
 **Status:** Completed — idle, awaiting owner decisions
