@@ -26,8 +26,8 @@ lint: ## Static checks with ruff (no changes)
 
 format: ## Rewrite files to project style
 	$(NEED_VENV)
-	$(PYTHON) -m ruff check --fix src tests
 	$(PYTHON) -m ruff format src tests
+	$(PYTHON) -m ruff check --fix src tests
 
 run: ## Run the artai CLI (ARGS="...")
 	$(NEED_VENV)
