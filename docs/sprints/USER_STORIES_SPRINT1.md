@@ -3,7 +3,7 @@
 *   **Total Points**: 24 (Tier 1)
 *   **Branch**: `main` (per `docs/SDLC.md` §6 — no sprint branches; one commit per approved phase)
 *   **Source**: User, 2026-10-20, `$sprint consolidate the art work generation tooling from ../recard and ../GlobalHeadsAndTails into a new tool in this repo` (agents/CHAT.md). Decisions on 2026-10-20: Python; build the tool only (no consumer migration); commit per phase on main.
-*   **Status**: Approved at Smith Gate 1 (round 2) — architecture below pending
+*   **Status**: Done — all 7 stories accepted (docs/sprints/UAT_PLAN_SPRINT1.md). Architecture: docs/ARCH.md
 
 ## Goal
 

@@ -27,7 +27,7 @@ MADR-style records. Decided by Morpheus (or the owner where noted), recorded by 
 ## ADR-0004: Per-item claim files instead of production lanes
 * **Status**: Accepted — 2026-10-20
 * **Context**: GHOT ran 16 workers across detached "lanes" (`sticker_production.py`) plus per-image locks. Lane supervision was project-specific.
-* **Decision**: Exclusive `claims/<id>.lock` (`O_CREAT|O_EXCL`) holding `{pid, start_time, host}`; any number of `artai generate` processes may run; dead owners' claims are taken over automatically.
+* **Decision**: Exclusive `claims/<id>.lock` holding `{pid, start_time, host}`, created by `os.link` from a fully written temp file (never seen half-written); taking over a dead owner's claim happens under `fcntl.flock` (see docs/LESSONS.md); any number of `artai generate` processes may run; dead owners' claims are taken over automatically.
 * **Consequences**: + parallel runs are safe without a supervisor. − no built-in detach/monitor; operators use `nohup`/tmux. Lane management stays out of scope.
 
 ## ADR-0005: Safe defaults

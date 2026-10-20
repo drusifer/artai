@@ -9,8 +9,17 @@ manifest ──generate──▶ masters/ (full-size originals) ──pack──
 ```
 
 Run it from this checkout after `make install`: `.venv/bin/artai <command> <manifest> [options]`
-(or `make run ARGS="<command> <manifest> ..."`). From another project, call it by path, e.g.
-`../artai/.venv/bin/artai`.
+(or `make run ARGS="<command> <manifest> ..."`).
+
+It is also pip-installable (not on PyPI) into any Python ≥ 3.11 virtualenv, which puts `artai`
+on that environment's PATH:
+
+```sh
+pip install /path/to/artai                     # from a checkout
+pip install git+<repo-url>@<tag-or-commit>      # once the repo is pushed
+```
+
+From another project you can also call this checkout by path, e.g. `../artai/.venv/bin/artai`.
 
 Exit codes: **0** success · **1** error (including a mistyped command or option), refused, or some items failed · **2** provider quota
 exhausted (re-run later; finished images are skipped) · **130** interrupted with Ctrl-C.

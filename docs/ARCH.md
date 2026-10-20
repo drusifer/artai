@@ -2,7 +2,7 @@
 
 *   **Status**: Approved at Smith Gate 2 (round 2, agents/smith/gate2_sprint1_review.md)
 *   **Author**: Morpheus
-*   **Last Updated**: 2026-10-20
+*   **Last Updated**: 2026-10-20 (Oracle groom: synced with code at sprint 1 close)
 *   **Scope**: Project-wide ARCH.md, written for Sprint 1 (`docs/sprints/USER_STORIES_SPRINT1.md`)
 
 ---
@@ -59,7 +59,8 @@ graph TB
 | `manifest.py` | Load and validate a manifest of any kind; resolve paths and defaults | file path, CLI overrides | `ArtSet`, `list[Item]` or `ManifestError` |
 | `prompts.py` | Render each item's final prompt (GHOT `PromptEngine` semantics, ported verbatim for parity) | `ArtSet`, `Item` | `(prompt, missing_placeholders)` |
 | `imaging.py` | All Pillow work: validate by dimensions, contain/autocrop fit, atomic save | image paths, fit params | image files, bool |
-| `backends/` | One module per provider behind one contract; registry lookup by name; unknown name is an error | `Job` | master PNG at `job.master`, or `QuotaExhausted` / `GenerationFailed` |
+| `backends/` | One module per provider behind one contract; registry lookup by name; unknown name is an error. `_proc.py` runs provider programs; `_prompt.py` holds the shared agent-CLI wording | `Job` | master PNG at `job.master`, or `QuotaExhausted` / `GenerationFailed` |
+| `model.py`, `errors.py` | The `ArtSet`/`Item` values; `ArtaiError` → one-line message + exit 1 | — | — |
 | `claims.py` | Exclusive per-item claim files holding `{pid, start_time, host}`; liveness check; stale unlock; regenerate archive | work_dir, id | claim acquired/busy, archived files |
 | `runner.py` | Schedule items over N workers; skip valid masters; retries; stop all on quota; summary | items, backend, options | `RunSummary` |
 | `pack.py` | Convert every valid master to the packed format/size | work_dir, output_dir, fit | `PackSummary` |
@@ -167,7 +168,8 @@ for those ids. `unlock --ids` removes claim files whose owner is not alive; refu
 Common options on every command: `--work DIR`, `--out DIR`, `--style TEXT`, `--fit autocrop|contain`.
 `--backend` is **required** for `generate`/`regenerate` (no default; omitting it prints the
 choices and exits 1) — a missing flag can neither spend quota nor write placeholder art.
-Defaults: `--parallel 2` (1–8), `--retries 2`, `--timeout 600`, `--min-size 512`.
+Defaults: `--parallel 2` (1–8), `--retries 2` (extra attempts), `--timeout 600`, `--min-size` = manifest
+`min_size` (512). Usage errors (unknown command/option) exit 1, never 2.
 
 ### Manifest (YAML) — superset of GlobalHeadsOrTails' schema
 ```yaml
@@ -195,7 +197,8 @@ stem, `fit=contain`, `size=512`, `quality=88`, template `{prompt}` + `--style`.
 @dataclass(frozen=True)
 class Job:
     id: str; prompt: str; master: Path; log: Path; timeout: float
-    reference_image: Path | None; resolution: tuple[int, int]
+    reference_image: Path | None
+    resolution: tuple[int, int]   # present but unused: gemini reads ArtSet.resolution
 
 class Backend(Protocol):
     name: str
@@ -231,7 +234,7 @@ on subprocess output, or HTTP 429.
 | Provider failure / hang | non-zero exit, no/invalid image, timeout | retry up to `retries`; subprocess killed at timeout | failed ids listed, exit 1 | that item only |
 | Provider writes junk | tiny or unopenable PNG | treated as failure; file left only if valid | listed as failed | that item |
 | Crash mid-run | kill -9 | claim file remains; masters are atomic | next run reports item "busy" only if owner alive; dead owner's claim is taken over automatically | that item |
-| Concurrent runs | two generators | claims are `O_CREAT|O_EXCL` | each item generated once | none |
+| Concurrent runs | two generators | claims created with atomic `os.link`; stale takeover under `flock` | each item generated once | none |
 | Pack of bad master | unopenable master | skipped, listed | `packed X/Y`, exit 1 | that item |
 
 Stale claims: a claim whose recorded `(pid, start_time)` no longer matches a live process on

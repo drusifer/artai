@@ -3,7 +3,9 @@
 Status: **ready, not yet applied** — Sprint 1 built artai and proved both projects' current
 inputs run through it unchanged (`tests/test_parity.py`, `tests/test_prompts.py`). Switching the
 projects over is a later sprint. Commands below assume artai is checked out beside them
-(`../artai`) and installed (`make -C ../artai install`); define in each Makefile:
+(`../artai`) and installed (`make -C ../artai install`). Alternatively `pip install ../artai`
+into the project's own venv and set `ARTAI` to that venv's `artai` (pin a commit/tag when the
+repo is pushed). Define in each Makefile:
 
 ```make
 ARTAI ?= ../artai/.venv/bin/artai
