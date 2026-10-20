@@ -43,7 +43,7 @@ The Makefile is the only entry point; recipes call `.venv/bin/python` and stop w
 | `install` | `python3 -m venv .venv` (if absent), `pip install -e ".[dev]"` | idempotent; the only target that uses the network |
 | `test` | `.venv/bin/python -m pytest` | `ARGS="-k name"` passes through |
 | `lint` | `ruff check src tests` + `ruff format --check src tests` | changes nothing |
-| `format` | `ruff check --fix` + `ruff format` | rewrites files |
+| `format` | `ruff format`, then `ruff check --fix` | rewrites files; formats first so an unfixable lint error cannot stop formatting (changed Sprint 1) |
 | `run` | `.venv/bin/artai $(ARGS)` | |
 | `clean` | removes `dist/`, `*.egg-info`, pytest/ruff caches, `__pycache__` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | used for the from-clean check |
@@ -134,6 +134,11 @@ None — everything runs locally. If CI is added it must run `make install && ma
   versions drift between machines.
 - `build/` is shared by `bobp make` output capture and generated-art scratch; both are
   machine-local and gitignored.
+- POSIX only (Linux verified): claim takeover uses `fcntl.flock`, provider timeouts kill process
+  groups, and liveness reads `/proc` (falls back to `os.kill` elsewhere). Both consumers run on
+  Linux; Windows support would need a different lock (ADR-0004).
+- `tests/fixtures/ghot` and `tests/fixtures/recard` are copies of the consumer projects' inputs
+  (2026-10-20). They are parity evidence, not live links; refresh them when those inputs change.
 
 ## 10. Conformance check
 
@@ -156,5 +161,5 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 9. `git grep -nE 'AIza[0-9A-Za-z_-]{20,}|sk-[A-Za-z0-9]{20,}'` finds no credential.
 
 ---
-*Last verified: 2026-10-20 against e5b6dee + uncommitted bootstrap, by Tank
-(distclean → install ×2 → test → lint, all passing).*
+*Last verified: 2026-10-20 against 214be61 (Sprint 1 close), by Tank — distclean → install →
+test (136 passed) → lint; conformance items 1–9 pass.*
