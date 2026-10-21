@@ -97,3 +97,41 @@ def test_pack_cli_exit_codes_and_overrides(tsv, in_tmp, capsys):
 def test_pack_cli_bad_quality(tsv, in_tmp, capsys):
     assert main(["pack", str(in_tmp / "j.tsv"), "--quality", "500"]) == 1
     assert "--quality" in capsys.readouterr().err
+
+
+def test_up_to_date_outputs_are_not_rewritten(tsv):
+    import os
+
+    art_set, items = tsv
+    master(art_set, "a", (600, 600))
+    assert pack(art_set, items).packed == 1
+    out = art_set.output_dir / "a.webp"
+    os.utime(out, (2_000_000_000, 2_000_000_000))  # newer than the master
+    before = out.stat().st_mtime
+    summary = pack(art_set, items)
+    assert (summary.packed, summary.current, summary.total) == (0, 1, 1)
+    assert out.stat().st_mtime == before
+
+
+def test_outdated_or_wrong_size_output_is_rewritten(tsv):
+    import os
+
+    art_set, items = tsv
+    master(art_set, "a", (600, 600))
+    art_set.output_dir.mkdir(parents=True, exist_ok=True)
+    Image.new("RGB", (100, 100)).save(art_set.output_dir / "a.webp")  # newer but wrong size
+    os.utime(art_set.output_dir / "a.webp", (2_000_000_000, 2_000_000_000))
+    assert pack(art_set, items).packed == 1
+    master(art_set, "a", (600, 600))
+    os.utime(art_set.masters_dir / "a.png", (2_100_000_000, 2_100_000_000))  # master newer than output
+    assert pack(art_set, items).packed == 1
+
+
+def test_pack_force_rewrites_current_outputs(tsv):
+    import os
+
+    art_set, items = tsv
+    master(art_set, "a", (600, 600))
+    pack(art_set, items)
+    os.utime(art_set.output_dir / "a.webp", (2_000_000_000, 2_000_000_000))
+    assert pack(art_set, items, force=True).packed == 1

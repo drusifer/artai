@@ -94,3 +94,19 @@ def test_unlock_nothing_to_clear(made, capsys):
 
 
 assert os.name == "posix"
+
+
+def test_generate_force_archives_then_regenerates(made, capsys):
+    manifest, work = made
+    assert main(["generate", manifest, "--backend", "mock"]) == 0
+    assert "0 generated, 2 already present" in capsys.readouterr().out
+    assert main(["generate", manifest, "--backend", "mock", "--force", "--ids", "a"]) == 0
+    out = capsys.readouterr().out
+    assert "1 generated" in out and "set aside" in out
+    assert len(list((work / "rejected").iterdir())) == 1
+
+
+def test_pack_cli_reports_up_to_date(made, capsys):
+    manifest, _ = made
+    assert main(["pack", manifest]) == 0
+    assert "2 already up to date" in capsys.readouterr().out

@@ -7,6 +7,7 @@
 - Their old tools (recard `tools/imagegen`, GlobalHeadsOrTails `tools/art_generator.py`), tests,
   docs and every reference to them are removed; artai's migration guide and source survey with them.
 - ADR-0006: how consumers install artai.
+- `generate` no longer repaints items that already have a packed image (e.g. a fresh clone without masters); `pack` skips up-to-date outputs. Both take `--force`; `generate --force` archives the old files to `rejected/` first.
 
 ## Unreleased — Sprint 1 "One art tool for every project" (2026-10-20)
 

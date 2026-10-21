@@ -112,6 +112,7 @@ def _run_options(args: argparse.Namespace, art_set: ArtSet) -> RunOptions:
         return value
 
     return RunOptions(
+        force=getattr(args, "force", False),
         parallel=number("--parallel", args.parallel, int, 1, 8),
         retries=number("--retries", args.retries, int, 0),
         timeout=number("--timeout", args.timeout, float, 1),
@@ -164,9 +165,29 @@ def _report(summary: RunSummary, minutes: float) -> int:
     return 1 if summary.failed else 0
 
 
+def _archive(art_set: ArtSet, items: list[Item]) -> None:
+    """Move current master and packed file of each item into rejected/<UTC time>/."""
+    stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
+    archive = art_set.work_dir / "rejected" / stamp
+    moved = 0
+    for item in items:
+        for source in (item.master(art_set), item.packed(art_set)):
+            if source.is_file():
+                archive.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(source), archive / source.name)
+                moved += 1
+    print(f"set aside {moved} file(s) → {archive}")
+
+
 def cmd_generate(args: argparse.Namespace) -> int:
-    art_set, items = _load(args)
-    return generate_items(args, art_set, select(items, args.ids))
+    art_set, all_items = _load(args)
+    items = select(all_items, args.ids)
+    if args.force:
+        if not args.backend:  # check before moving anything
+            raise ConfigError(f"--backend is required (choose one of: {', '.join(backend_names())})")
+        _refuse_live(art_set, items)
+        _archive(art_set, items)
+    return generate_items(args, art_set, items)
 
 
 def cmd_pack(args: argparse.Namespace) -> int:
@@ -187,8 +208,11 @@ def cmd_pack(args: argparse.Namespace) -> int:
                 raise ConfigError(f"{flag} must be a whole number {low}–{high}, got '{raw}'")
             changes[key] = value
     art_set = replace(art_set, **changes) if changes else art_set
-    summary = pack(art_set, items)
-    print(f"artai — packed {summary.packed}/{summary.total} → {art_set.output_dir}")
+    summary = pack(art_set, items, force=args.force)
+    print(
+        f"artai — packed {summary.packed}/{summary.total}, {summary.current} already up to date "
+        f"→ {art_set.output_dir}"
+    )
     if summary.skipped:
         print(f"skipped (master does not open): {', '.join(summary.skipped)}")
         return 1
@@ -239,16 +263,7 @@ def cmd_regenerate(args: argparse.Namespace) -> int:
     _refuse_live(art_set, items)
     if not args.backend:  # check before moving anything
         raise ConfigError(f"--backend is required (choose one of: {', '.join(backend_names())})")
-    stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
-    archive = art_set.work_dir / "rejected" / stamp
-    moved = 0
-    for item in items:
-        for source in (item.master(art_set), item.packed(art_set)):
-            if source.is_file():
-                archive.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(source), archive / source.name)
-                moved += 1
-    print(f"set aside {moved} file(s) → {archive}")
+    _archive(art_set, items)
     code = generate_items(args, art_set, items)
     print(f"next: artai pack {args.manifest}   (the regenerated items have no packed image yet)")
     return code
@@ -291,6 +306,11 @@ def _generation() -> argparse.ArgumentParser:
     )
     gen.add_argument("--ids", metavar="A,B", help="only these item ids")
     gen.add_argument("--reverse", action="store_true", help="work from the end of the list")
+    gen.add_argument(
+        "--force",
+        action="store_true",
+        help="redo items that already have art (old files are moved to rejected/ first)",
+    )
     return gen
 
 
@@ -314,6 +334,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--format", choices=FORMATS, help="output format (overrides manifest)")
     p.add_argument("--quality", metavar="Q", help="1–100 (overrides manifest)")
     p.add_argument("--size", metavar="PX", help="longest edge for --fit contain (overrides manifest)")
+    p.add_argument("--force", action="store_true", help="rewrite outputs even if they are up to date")
     p.set_defaults(handler=cmd_pack)
 
     p = sub.add_parser("review", parents=[common], help="write an HTML contact sheet")

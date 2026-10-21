@@ -28,6 +28,7 @@ class RunOptions:
     timeout: float = 600.0
     min_size: int = 512
     reverse: bool = False
+    force: bool = False  # regenerate even items that already have art
 
 
 @dataclass
@@ -64,15 +65,23 @@ class _Run:
         self.summary = RunSummary()
         self.done = 0
 
-    def finished(self, master) -> bool:
-        if not is_valid(master, self.options.min_size):
+    def finished(self, item: Item) -> bool:
+        """An item is done if it has real art: a valid master, or a packed image (masters are often
+        not kept in git, so a fresh checkout has only the packed files). Placeholder art only counts
+        as done for the mock backend itself."""
+        if self.options.force:
             return False
-        # Placeholder art only counts as finished for the mock backend itself.
-        return self.backend.name == "mock" or not is_placeholder(master)
+        master = item.master(self.art_set)
+        placeholder = master.is_file() and is_placeholder(master)
+        if placeholder and self.backend.name != "mock":
+            return False
+        if is_valid(master, self.options.min_size):
+            return True
+        return is_valid(item.packed(self.art_set), 1)
 
     def one(self, item: Item) -> Result:
         master = item.master(self.art_set)
-        if self.finished(master):
+        if self.finished(item):
             return "skip"
         if self.quota.is_set() or self.interrupted.is_set():
             return "stopped"
@@ -80,7 +89,7 @@ class _Run:
         if claim is None:
             return "busy"
         try:
-            if self.finished(master):  # another process finished it between our checks
+            if self.finished(item):  # another process finished it between our checks
                 return "skip"
             return self.attempts(item, master)
         finally:

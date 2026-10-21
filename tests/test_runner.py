@@ -152,3 +152,32 @@ def test_summary_json_shape(five):
     art_set, items = five
     summary = run(art_set, items, Scripted(), RunOptions())
     assert json.loads(json.dumps(summary.as_dict()))["ok"] == 5
+
+
+def test_packed_image_without_master_is_not_regenerated(five):
+    from PIL import Image
+
+    art_set, items = five
+    art_set.output_dir.mkdir(parents=True)
+    Image.new("RGB", (341, 512), "red").save(items[0].packed(art_set))  # e.g. fresh clone: masters gitignored
+    backend = Scripted()
+    summary = run(art_set, items, backend, RunOptions())
+    assert "i0" not in backend.calls and summary.skipped == 1 and summary.ok == 4
+
+
+def test_packed_from_placeholder_master_is_still_replaced(five):
+    art_set, items = five
+    run(art_set, items, get_backend("mock", art_set), RunOptions())
+    from artai.pack import pack
+
+    pack(art_set, items)
+    real = Scripted()
+    assert run(art_set, items, real, RunOptions()).ok == 5
+
+
+def test_force_regenerates_existing(five):
+    art_set, items = five
+    run(art_set, items, Scripted(), RunOptions())
+    again = Scripted()
+    summary = run(art_set, items, again, RunOptions(force=True))
+    assert summary.ok == 5 and sorted(again.calls) == [i.id for i in items]

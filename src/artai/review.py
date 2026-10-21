@@ -28,7 +28,7 @@ class VerifyReport:
         return not self.problems and not self.duplicates
 
 
-def _size_problem(art_set: ArtSet, size: tuple[int, int]) -> str | None:
+def size_problem(art_set: ArtSet, size: tuple[int, int]) -> str | None:
     width, height = size
     if art_set.fit == "autocrop":
         if size != art_set.resolution:
@@ -54,7 +54,7 @@ def verify(art_set: ArtSet, items: list[Item], allow_mock: bool = False) -> Veri
         except (OSError, ValueError):
             report.problems.append((item.id, "packed image does not open"))
             continue
-        problem = _size_problem(art_set, size)
+        problem = size_problem(art_set, size)
         if problem:
             report.problems.append((item.id, problem))
         if not allow_mock and is_placeholder(item.master(art_set)):
