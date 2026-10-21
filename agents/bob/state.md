@@ -10,7 +10,7 @@
 - artai is pip-installable from source (`pip install /path/to/artai`), verified in a clean venv; recorded in `docs/SDLC.md` §7.
 
 ### Important Notes
-- 2026-10-20 Sprint 2 DONE: recard (dev a1c6fc5) and GlobalHeadsOrTails (main 666b617 pre-existing work, 35fb018 migration) use artai via `make art-install` / `make install-art` (pip -e ../artai). Old tools/docs/refs removed (grep-verified). artai e7acfbf. Nothing pushed in any repo; GHOT is also 1 commit behind origin/main.
+- 2026-10-20 Sprint 2 DONE: recard (dev a1c6fc5) and GlobalHeadsOrTails (main d1798b7 pre-existing work, 507d243 migration — rebased) use artai via `make art-install` / `make install-art` (pip -e ../artai). Old tools/docs/refs removed (grep-verified). artai e7acfbf. All three repos pushed 2026-10-20.
 - Sprint 1 complete and launched 2026-10-20. Commits `86b1ea5`…`384d3d7` on `main` (13 commits), **none pushed**.
 - 138 tests pass (`bobp make test`, ~47 s on this Pi; parity suite is most of it); `bobp make lint` clean.
 - Real `codex` (/usr/bin/codex) and `agy` (~/.local/bin/agy) are installed; providers were only tested with stand-ins (no quota spent).
@@ -41,7 +41,7 @@ Oracle state: `agents/oracle/state.md` (docs consistent as of 2026-10-20).
 ## Next Steps
 ### Immediate Next Action
 On resume: ask the owner (do not start unasked):
-1. Push? artai main, recard dev, GlobalHeadsOrTails main (GHOT needs `git pull --rebase` first: 1 upstream commit). Agents are blocked from `git push` by the permission classifier; the owner runs `! git push ...`.
+1. (done) All repos pushed.
 2. Release artai 0.2.0 + tag (CHANGELOG has Sprint 1 + 2 under Unreleased).
 3. Live provider sample (recard: `make art-gen` uses sandboxed codex — never run live yet).
 4. Backlog #9/#10 in docs/BACKLOG.md (protect packed-without-master; pack skips placeholders).
