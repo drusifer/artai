@@ -1,0 +1,50 @@
+name: Release to PyPI
+
+# Triggered by publishing a GitHub Release (tag it vX.Y.Z first, then run
+# `make release`). Authentication is OIDC trusted publishing: PyPI trusts
+# this repo + workflow + the `pypi` environment (which requires reviewer
+# approval). No PyPI API token is stored. Actions are pinned to commit SHAs;
+# Dependabot keeps the pins current.
+on:
+  release:
+    types: [published]
+
+# Least privilege: jobs get a read-only token unless they ask for more.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tooling
+        run: pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # required for PyPI trusted publishing (OIDC)
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3

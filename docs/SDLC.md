@@ -44,14 +44,15 @@ The Makefile is the only entry point; recipes call `.venv/bin/python` and stop w
 | `test` | `.venv/bin/python -m pytest` | `ARGS="-k name"` passes through |
 | `lint` | `ruff check src tests` + `ruff format --check src tests` | changes nothing |
 | `format` | `ruff format`, then `ruff check --fix` | rewrites files; formats first so an unfixable lint error cannot stop formatting (changed Sprint 1) |
+| `build` | `python -m build` into a fresh `dist/`, then `twine check` | sdist + wheel; changes no source |
+| `release-setup` | prints the one-time manual steps (PyPI name check, GitHub `pypi` environment, PyPI trusted publisher) with this repo's values | changes nothing; the steps are manual |
+| `release` | `lint` + `test`, then tag `v<version>`, push the tag, `gh release create` | runs only from `main` equal to `origin/main`; refuses on version mismatch (`__init__` vs `pyproject`), uncommitted package files, or an existing release; the release triggers `.github/workflows/release.yml` to publish to PyPI |
 | `run` | `.venv/bin/artai $(ARGS)` | |
 | `clean` | removes `dist/`, `*.egg-info`, pytest/ruff caches, `__pycache__` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | used for the from-clean check |
 | `help` | lists targets (default goal) | |
 
-Standard targets deliberately absent: `build` — nothing is published; consumers install from a
-checkout with pip (section 7), which builds the wheel itself. Add `build` when a release channel
-(PyPI, wheel artifact) is chosen.
+`build` and `release` were added when PyPI was chosen as the release channel (dev deps `build`, `twine`).
 
 ## 4. Dependencies
 
@@ -121,7 +122,10 @@ is reported to Tank so one of them gets fixed.
 - **Bumped:** by Cypher at sprint launch, with user approval; semver (minor for features).
 - **CLI entry points:** `[project.scripts] artai = "artai.cli:main"` — installed to
   `.venv/bin/artai` by `make install`.
-- **Artifact:** None published (no PyPI, no wheel kept). The package is pip-installable from
+- **Artifact:** sdist + wheel from `make build`, published to PyPI by `make release` (GitHub
+  trusted publishing; the GitHub environment `pypi` requires reviewer approval; PyPI must trust
+  repo `drusifer/artai`, workflow `release.yml`, environment `pypi` — one-time owner setup via `make release-setup`). Versions are immutable on PyPI: bump both version locations and push `main` first.
+  The package is also pip-installable from
   source via the `setuptools` backend in `pyproject.toml`:
   - `pip install /path/to/artai` — from a checkout, into any Python ≥ 3.11 venv; installs only
     runtime dependencies (Pillow, PyYAML) and puts `artai` on that venv's PATH.
